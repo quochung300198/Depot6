@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   resources :line_items
+  delete '/line_items/:id/decrease', to: 'line_items#decrease', as: "decrease"
   resources :carts
   root 'store#index', as: 'store_index'
   resources :products

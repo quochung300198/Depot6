@@ -1,7 +1,7 @@
 class LineItemsController < ApplicationController
   include CurrentCart
-  before_action :set_cart, only: [:create]
-  before_action :set_line_item, only: [:show, :edit, :update, :destroy]
+  before_action :set_cart, only: [:create, :decrease]
+  before_action :set_line_item, only: [:show, :edit, :update, :destroy, :decrease]
 
   # GET /line_items
   # GET /line_items.json
@@ -31,7 +31,8 @@ class LineItemsController < ApplicationController
     session[:counter] = 0
     respond_to do |format|
       if @line_item.save
-        format.html { redirect_to @line_item.cart }
+        format.html { redirect_to store_index_url }
+        format.js { @current_item = @line_item }
         format.json { render :show, status: :created, location: @line_item }
       else
         format.html { render :new }
@@ -59,8 +60,22 @@ class LineItemsController < ApplicationController
   def destroy
     @line_item.destroy
     respond_to do |format|
-      format.html { redirect_to @line_item.cart, notice: "#{@line_item.quantity} x #{@line_item.product.title} was successfully removed." }
+      format.html { redirect_to store_index_url, notice: "#{@line_item.quantity} x #{@line_item.product.title} was successfully removed." }
       format.json { head :no_content }
+    end
+  end
+
+  def decrease
+    @line_item.quantity == 1 ? @line_item.destroy : @line_item.quantity -= 1
+    respond_to do |format|
+      if @line_item.save
+        format.html { redirect_to store_index_url }
+        format.js
+        format.json { head :no_content }
+      else
+        format.html { render :edit }
+        format.json { render json: @line_item.errors, status: :unprocessable_entity }
+      end
     end
   end
 

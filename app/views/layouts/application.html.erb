@@ -4,6 +4,7 @@
     <title>Pragprog Books Online Store</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= action_cable_meta_tag %>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
@@ -17,6 +18,9 @@
     </header>
     <section class="content">
       <nav class="side_nav">
+        <div id="cart" class="carts">
+          <%= render_if @cart && @cart.line_items.any?, @cart %>
+        </div>
         <ul>
           <li><a href="/">Home</a></li>
           <li><a href=<%= "/carts/#{session[:cart_id]}" %>>Cart</a></li>
